@@ -22,6 +22,7 @@ public class BankingManagementApplication extends Application
         final Set<Class<?>> classes = new HashSet<>();
         classes.add(RootResource.class);
         classes.add(CustomerResource.class);
+        classes.add(DepositResource.class);
         return classes;
     }
 }
