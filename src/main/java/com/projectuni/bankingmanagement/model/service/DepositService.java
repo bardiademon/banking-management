@@ -37,9 +37,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
 
     public List<Customers> getCustomerDeposits(final long depositId) throws NotFoundDepositException
     {
-        final Optional<Deposit> depositById = depositRepository.findById(depositId);
-        if (depositById.isPresent()) return depositById.get().getCustomers();
-        else throw new NotFoundDepositException();
+        return getDepositById(depositId).getCustomers();
     }
 
     public List<Deposit> getDeposits() throws NotFoundDepositException
@@ -102,20 +100,40 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         else throw new NullPointerException("Request is null");
     }
 
-
     public void changeStatus(final long depositId , final DepositStatus status) throws NotFoundDepositException, DepositIsClosedException
     {
-        final Optional<Deposit> depositById = depositRepository.findById(depositId);
-        if (depositById.isPresent())
+        final Deposit deposit = getDepositById(depositId);
+        if (!deposit.getDepositStatus().equals(DepositStatus.CLOSED))
         {
-            final Deposit deposit = depositById.get();
-            if (!deposit.getDepositStatus().equals(DepositStatus.CLOSED))
-            {
-                deposit.setDepositStatus(status);
-                depositRepository.save(deposit);
-            }
-            else throw new DepositIsClosedException();
+            deposit.setDepositStatus(status);
+            depositRepository.save(deposit);
         }
+        else throw new DepositIsClosedException();
+    }
+
+    /**
+     * Increase deposit account
+     *
+     * @param depositId
+     * @param amount
+     * @throws NotFoundDepositException
+     * @throws InvalidAccountInventory
+     */
+    public void increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory
+    {
+        final Deposit depositById = getDepositById(depositId);
+        if (amount > 0)
+        {
+            depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
+            depositRepository.save(depositById);
+        }
+        else throw new InvalidAccountInventory();
+    }
+
+    private Deposit getDepositById(final long id) throws NotFoundDepositException
+    {
+        final Optional<Deposit> depositById = depositRepository.findById(id);
+        if (depositById.isPresent()) return depositById.get();
         else throw new NotFoundDepositException();
     }
 }

@@ -105,6 +105,35 @@ public class DepositResource
         }
     }
 
+    // Increase deposit account
+    @POST
+    @Path("/increase/{ID_DEPOSIT}/{AMOUNT}")
+    @Produces("application/json")
+    public String increaseDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") long amount)
+    {
+
+        long idDeposit;
+        try
+        {
+            idDeposit = Integer.parseInt(idDepositStr);
+        }
+        catch (Exception ignored)
+        {
+            return "invalid deposit id";
+        }
+
+        try
+        {
+            depositService.increase(idDeposit , amount);
+            return "increase";
+        }
+        catch (NotFoundDepositException | InvalidAccountInventory e)
+        {
+            return e.getMessage();
+        }
+
+    }
+
     @POST
     @Path("/opening")
     @Produces("application/json")
