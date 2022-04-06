@@ -34,6 +34,13 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         else throw new NotFoundCustomerException();
     }
 
+    public List<Deposit> getDeposits() throws NotFoundDepositException
+    {
+        final List<Deposit> depositByCustomerId = depositRepository.findAll();
+        if (depositByCustomerId.size() > 0) return depositByCustomerId;
+        else throw new NotFoundDepositException();
+    }
+
     /**
      * @param dtoOpeningDeposit
      * @throws NullPointerException

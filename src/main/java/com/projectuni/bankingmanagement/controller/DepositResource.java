@@ -43,6 +43,21 @@ public class DepositResource
         return null;
     }
 
+    @GET
+    @Path("/")
+    @Produces("application/json")
+    public List<DTODeposit> getDeposits()
+    {
+        try
+        {
+            return ToDTODeposit.to(depositService.getDeposits());
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
+
     @POST
     @Path("/opening")
     @Produces("application/json")
