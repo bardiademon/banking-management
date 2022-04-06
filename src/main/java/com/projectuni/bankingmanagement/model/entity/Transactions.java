@@ -10,9 +10,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,6 +24,9 @@ import javax.persistence.Table;
 @Table(name = "transactions")
 public final class Transactions extends BaseEntity
 {
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Customers> customers;
+
     @Column(nullable = false)
     private int price;
 
