@@ -10,6 +10,10 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class DTOCustomer extends DTOCreateCustomer
 {
+
+    @JsonProperty("id")
+    private long id;
+
     @JsonProperty("status")
     private boolean status;
 }

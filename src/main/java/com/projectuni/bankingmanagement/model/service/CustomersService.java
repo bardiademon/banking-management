@@ -6,6 +6,7 @@ import com.projectuni.bankingmanagement.exception.InvalidCustomerNameException;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
 import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
+import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomer;
@@ -20,6 +21,7 @@ import javax.persistence.Query;
 import javax.ws.rs.InternalServerErrorException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public record CustomersService(CustomersRepository customersRepository)
@@ -147,5 +149,18 @@ public record CustomersService(CustomersRepository customersRepository)
             }
         }
         throw new NullPointerException("Request is null");
+    }
+
+    public void changeCustomerStatus(final long customerId , final boolean newStatus) throws NotFoundCustomerException
+    {
+        final Optional<Customers> customerFindById = customersRepository.findById(customerId);
+
+        if (customerFindById.isPresent())
+        {
+            final Customers customer = customerFindById.get();
+            customer.setStatus(newStatus);
+            customersRepository.save(customer);
+        }
+        else throw new NotFoundCustomerException();
     }
 }

@@ -21,17 +21,17 @@ public class ToDtoCustomer
         return null;
     }
 
-    public static DTOCustomer to(final Customers customers)
+    public static DTOCustomer to(final Customers customer)
     {
-        System.out.println("Greg");
         final DTOCustomer dtoCustomer = new DTOCustomer();
-        dtoCustomer.setName(customers.getName());
-        dtoCustomer.setFamily(customers.getFamily());
-        dtoCustomer.setStatus(customers.isStatus());
-        dtoCustomer.setNationalCode(customers.getNationalCode());
-        dtoCustomer.setDateOfBirthStr(DateParser.toString(customers.getDateOfBirth()));
-        dtoCustomer.setPhoneNumber(customers.getPhoneNumber());
-        dtoCustomer.setType(customers.getType());
+        dtoCustomer.setId(customer.getId());
+        dtoCustomer.setName(customer.getName());
+        dtoCustomer.setFamily(customer.getFamily());
+        dtoCustomer.setStatus(customer.isStatus());
+        dtoCustomer.setNationalCode(customer.getNationalCode());
+        dtoCustomer.setDateOfBirthStr(DateParser.toString(customer.getDateOfBirth()));
+        dtoCustomer.setPhoneNumber(customer.getPhoneNumber());
+        dtoCustomer.setType(customer.getType());
         return dtoCustomer;
     }
 }
