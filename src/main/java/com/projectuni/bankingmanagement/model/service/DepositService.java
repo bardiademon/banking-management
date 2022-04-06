@@ -34,6 +34,13 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         else throw new NotFoundCustomerException();
     }
 
+    public List<Customers> getCustomerDeposits(final long depositId) throws NotFoundDepositException
+    {
+        Optional<Deposit> depositById = depositRepository.findById(depositId);
+        if (depositById.isPresent()) return depositById.get().getCustomers();
+        else throw new NotFoundDepositException();
+    }
+
     public List<Deposit> getDeposits() throws NotFoundDepositException
     {
         final List<Deposit> depositByCustomerId = depositRepository.findAll();

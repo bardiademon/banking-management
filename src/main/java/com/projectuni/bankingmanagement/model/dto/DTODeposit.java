@@ -15,6 +15,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DTODeposit
 {
+    @JsonProperty("id")
+    private long id;
+
     @JsonProperty("deposit_type")
     private DepositType depositType;
 

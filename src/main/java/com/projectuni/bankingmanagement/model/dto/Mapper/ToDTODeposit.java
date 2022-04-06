@@ -30,6 +30,7 @@ public final class ToDTODeposit
         if (deposit != null)
         {
             final DTODeposit dtoDeposit = new DTODeposit();
+            dtoDeposit.setId(deposit.getId());
             dtoDeposit.setDepositStatus(deposit.getDepositStatus());
             dtoDeposit.setDepositType(deposit.getDepositType());
             dtoDeposit.setDepositCurrency(deposit.getDepositCurrency());

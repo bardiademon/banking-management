@@ -4,8 +4,10 @@ import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
+import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTODeposit;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTOCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTODeposit;
 import com.projectuni.bankingmanagement.model.service.DepositService;
 
@@ -51,6 +53,21 @@ public class DepositResource
         try
         {
             return ToDTODeposit.to(depositService.getDeposits());
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
+
+    @GET
+    @Path("/get-customers/{ID_DEPOSIT}")
+    @Produces("application/json")
+    public List<DTOCustomer> getCustomersDeposits(@PathParam("ID_DEPOSIT") String idDepositStr)
+    {
+        try
+        {
+            return ToDTOCustomer.to(depositService.getCustomerDeposits(Integer.parseInt(idDepositStr)));
         }
         catch (Exception ignored)
         {
