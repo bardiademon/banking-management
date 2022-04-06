@@ -1,14 +1,17 @@
 package com.projectuni.bankingmanagement.controller;
 
 import com.projectuni.bankingmanagement.config.SpringConfig;
+import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
+import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTODeposit;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTOCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTODeposit;
+import com.projectuni.bankingmanagement.model.enums.DepositStatus;
 import com.projectuni.bankingmanagement.model.service.DepositService;
 
 import javax.ws.rs.Consumes;
@@ -73,6 +76,33 @@ public class DepositResource
         {
         }
         return null;
+    }
+
+    @POST
+    @Path("/change-status/{ID_DEPOSIT}/{STATUS}")
+    @Produces("application/json")
+    public String getStatusDeposits(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("STATUS") DepositStatus status)
+    {
+
+        long idDeposit;
+        try
+        {
+            idDeposit = Integer.parseInt(idDepositStr);
+        }
+        catch (Exception ignored)
+        {
+            return "invalid deposit id";
+        }
+
+        try
+        {
+            depositService.changeStatus(idDeposit , status);
+            return "changed";
+        }
+        catch (NotFoundDepositException | DepositIsClosedException e)
+        {
+            return e.getMessage();
+        }
     }
 
     @POST

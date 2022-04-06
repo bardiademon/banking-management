@@ -1,5 +1,6 @@
 package com.projectuni.bankingmanagement.model.service;
 
+import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
@@ -36,7 +37,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
 
     public List<Customers> getCustomerDeposits(final long depositId) throws NotFoundDepositException
     {
-        Optional<Deposit> depositById = depositRepository.findById(depositId);
+        final Optional<Deposit> depositById = depositRepository.findById(depositId);
         if (depositById.isPresent()) return depositById.get().getCustomers();
         else throw new NotFoundDepositException();
     }
@@ -99,5 +100,22 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
             else throw new NotFoundCustomerException();
         }
         else throw new NullPointerException("Request is null");
+    }
+
+
+    public void changeStatus(final long depositId , final DepositStatus status) throws NotFoundDepositException, DepositIsClosedException
+    {
+        final Optional<Deposit> depositById = depositRepository.findById(depositId);
+        if (depositById.isPresent())
+        {
+            final Deposit deposit = depositById.get();
+            if (!deposit.getDepositStatus().equals(DepositStatus.CLOSED))
+            {
+                deposit.setDepositStatus(status);
+                depositRepository.save(deposit);
+            }
+            else throw new DepositIsClosedException();
+        }
+        else throw new NotFoundDepositException();
     }
 }
