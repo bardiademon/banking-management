@@ -5,6 +5,8 @@ import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
+import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositException;
+import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
@@ -129,6 +131,34 @@ public class DepositResource
             return "increase";
         }
         catch (NotFoundDepositException | InvalidAccountInventory | InvalidIncreaseDepositException e)
+        {
+            return e.getMessage();
+        }
+
+    }
+
+    @GET
+    @Path("/withdrawal/{ID_DEPOSIT}/{AMOUNT}")
+    @Produces("application/json")
+    public String withdrawalDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") long amount)
+    {
+
+        long idDeposit;
+        try
+        {
+            idDeposit = Integer.parseInt(idDepositStr);
+        }
+        catch (Exception ignored)
+        {
+            return "invalid deposit id";
+        }
+
+        try
+        {
+            depositService.withdrawal(idDeposit , amount);
+            return "withdrawal";
+        }
+        catch (NotFoundDepositException | InvalidAccountInventory | InvalidWithdrawalDepositException | InventoryIsNotEnoughException e)
         {
             return e.getMessage();
         }

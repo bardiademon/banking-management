@@ -4,6 +4,8 @@ import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
+import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositException;
+import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
@@ -119,18 +121,50 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @param amount
      * @throws NotFoundDepositException
      * @throws InvalidAccountInventory
+     * @throws InvalidIncreaseDepositException
      */
     public void increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException
     {
         final Deposit depositById = getDepositById(depositId);
         if (amount > 0)
         {
-            if (depositById.getDepositStatus().equals(DepositStatus.OPEN) || depositById.getDepositStatus().equals(DepositStatus.BLOCKED_WITHDRAWAL))
+            final DepositStatus depositStatus = depositById.getDepositStatus();
+            if (depositStatus.equals(DepositStatus.OPEN) || depositStatus.equals(DepositStatus.BLOCKED_WITHDRAWAL))
             {
                 depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
                 depositRepository.save(depositById);
             }
             else throw new InvalidIncreaseDepositException();
+        }
+        else throw new InvalidAccountInventory();
+    }
+
+    /**
+     * Increase deposit account
+     *
+     * @param depositId
+     * @param amount
+     * @throws NotFoundDepositException
+     * @throws InvalidAccountInventory
+     * @throws InvalidWithdrawalDepositException
+     */
+    public void withdrawal(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException
+    {
+        final Deposit depositById = getDepositById(depositId);
+        if (amount > 0)
+        {
+            final DepositStatus depositStatus = depositById.getDepositStatus();
+            if (depositStatus.equals(DepositStatus.OPEN) || depositStatus.equals(DepositStatus.BLOCKED_DEPOSIT))
+            {
+                final long accountInventory = depositById.getAccountInventory();
+                if (accountInventory >= amount)
+                {
+                    depositById.setAccountInventory(Math.abs(accountInventory - amount));
+                    depositRepository.save(depositById);
+                }
+                else throw new InventoryIsNotEnoughException();
+            }
+            else throw new InvalidWithdrawalDepositException();
         }
         else throw new InvalidAccountInventory();
     }
