@@ -7,7 +7,7 @@ import com.projectuni.bankingmanagement.other.DateParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToDtoCustomer
+public class ToDTOCustomer
 {
     public static List<DTOCustomer> to(List<Customers> customers)
     {

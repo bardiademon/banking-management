@@ -11,7 +11,7 @@ import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
-import com.projectuni.bankingmanagement.model.dto.Mapper.ToDtoCustomer;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTOCustomer;
 import com.projectuni.bankingmanagement.model.service.CustomersService;
 
 import javax.inject.Inject;
@@ -58,7 +58,7 @@ public class CustomerResource
     @Produces("application/json")
     public List<DTOCustomer> getCustomers()
     {
-        return ToDtoCustomer.to(customersService.getCustomers());
+        return ToDTOCustomer.to(customersService.getCustomers());
     }
 
     @GET
@@ -67,7 +67,7 @@ public class CustomerResource
     @Consumes("application/json")
     public List<DTOCustomer> searchCustomer(final DTOSearchCustomer dtoSearchCustomer)
     {
-        return ToDtoCustomer.to(customersService.getCustomers(dtoSearchCustomer));
+        return ToDTOCustomer.to(customersService.getCustomers(dtoSearchCustomer));
     }
 
     @GET
