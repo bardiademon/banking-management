@@ -1,24 +1,28 @@
 package com.projectuni.bankingmanagement.model.service;
 
+import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.CannotCreateCustomerException;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerNameException;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
 import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
+import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomer;
-import com.projectuni.bankingmanagement.model.entity.Customer;
-import com.projectuni.bankingmanagement.model.repository.CustomerRepository;
+import com.projectuni.bankingmanagement.model.entity.Customers;
+import com.projectuni.bankingmanagement.model.repository.CustomersRepository;
 import com.projectuni.bankingmanagement.other.DateParser;
 import com.projectuni.bankingmanagement.other.Str;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.ws.rs.InternalServerErrorException;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public record CustomerService(CustomerRepository customerRepository)
+public record CustomersService(CustomersRepository customersRepository)
 {
 
     /**
@@ -59,20 +63,20 @@ public record CustomerService(CustomerRepository customerRepository)
                     /**
                      * Searches the national code in the database
                      *
-                     * @see CustomerRepository#findByNationalCode(int)
+                     * @see CustomersRepository#findByNationalCode(int)
                      */
-                    final Customer customerByNationalCode = customerRepository.findByNationalCode(dtoCreateCustomer.getNationalCode());
+                    final Customers customersByNationalCode = customersRepository.findByNationalCode(dtoCreateCustomer.getNationalCode());
 
-                    if (customerByNationalCode == null)
+                    if (customersByNationalCode == null)
                     {
                         if (dtoCreateCustomer.getType() != null)
                         {
                             try
                             {
-                                Customer customer = ToCustomer.to(dtoCreateCustomer);
-                                customer = customerRepository.save(customer);
+                                Customers customers = ToCustomer.to(dtoCreateCustomer);
+                                customers = customersRepository.save(customers);
 
-                                if (customer.getId() <= 0) throw new CannotCreateCustomerException();
+                                if (customers.getId() <= 0) throw new CannotCreateCustomerException();
                             }
                             catch (Exception e)
                             {
@@ -90,9 +94,58 @@ public record CustomerService(CustomerRepository customerRepository)
         else throw new NullPointerException("Request is null");
     }
 
-
-    public List<Customer> getCustomers()
+    public List<Customers> getCustomers()
     {
-        return customerRepository.findAll();
+        return customersRepository.findAll();
+    }
+
+    public List<Customers> getCustomers(final DTOSearchCustomer dtoSearchCustomer)
+    {
+        if (dtoSearchCustomer != null)
+        {
+            if (Str.notEmpty(dtoSearchCustomer.getName()) || dtoSearchCustomer.getNationalCode() > 0 || dtoSearchCustomer.getType() != null)
+            {
+                final StringBuilder strQuery = new StringBuilder("select customer from Customers customer where ");
+
+                boolean before = false;
+
+                boolean hasName = false, hasType = false, hasNationalCode = false;
+
+                if (Str.notEmpty(dtoSearchCustomer.getName()))
+                {
+                    hasName = true;
+
+                    strQuery.append("customer.name = :NAME");
+                    before = true;
+                }
+                if (dtoSearchCustomer.getType() != null)
+                {
+                    hasType = true;
+
+                    if (before) strQuery.append(" or ");
+
+                    strQuery.append("customer.type = :TYPE");
+                    before = true;
+                }
+                if (dtoSearchCustomer.getNationalCode() > 0)
+                {
+                    hasNationalCode = true;
+
+                    if (before) strQuery.append(" or ");
+
+                    strQuery.append("customer.nationalCode = :NATIONAL_CODE");
+                }
+
+                final EntityManager entityManager = SpringConfig.getEntityManager();
+                final Query query = entityManager.createQuery(strQuery.toString());
+
+                if (hasName) query.setParameter("NAME" , dtoSearchCustomer.getName());
+                if (hasType) query.setParameter("TYPE" , dtoSearchCustomer.getType());
+                if (hasNationalCode) query.setParameter("NATIONAL_CODE" , dtoSearchCustomer.getNationalCode());
+
+                return (List<Customers>) query.getResultList();
+            }
+        }
+        throw new NullPointerException("Request is null");
     }
 }

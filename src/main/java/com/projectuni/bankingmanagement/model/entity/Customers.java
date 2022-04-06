@@ -16,8 +16,8 @@ import java.util.Date;
 @Setter
 @RequiredArgsConstructor
 @Entity
-@Table(name = "customer")
-public final class Customer extends BaseEntity
+@Table(name = "customers")
+public final class Customers extends BaseEntity
 {
     @Column(name = "customer_name", nullable = false, length = 30)
     private String name;

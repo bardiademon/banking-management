@@ -1,7 +1,7 @@
 package com.projectuni.bankingmanagement.model.dto.Mapper;
 
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
-import com.projectuni.bankingmanagement.model.entity.Customer;
+import com.projectuni.bankingmanagement.model.entity.Customers;
 
 public final class ToCustomer
 {
@@ -9,15 +9,15 @@ public final class ToCustomer
     {
     }
 
-    public static Customer to(final DTOCreateCustomer dtoCreateCustomer)
+    public static Customers to(final DTOCreateCustomer dtoCreateCustomer)
     {
-        final Customer customer = new Customer();
-        customer.setName(dtoCreateCustomer.getName());
-        customer.setFamily(dtoCreateCustomer.getFamily());
-        customer.setNationalCode(dtoCreateCustomer.getNationalCode());
-        customer.setPhoneNumber(dtoCreateCustomer.getPhoneNumber());
-        customer.setType(dtoCreateCustomer.getType());
-        customer.setDateOfBirth(dtoCreateCustomer.getDateOfBirth());
-        return customer;
+        final Customers customers = new Customers();
+        customers.setName(dtoCreateCustomer.getName());
+        customers.setFamily(dtoCreateCustomer.getFamily());
+        customers.setNationalCode(dtoCreateCustomer.getNationalCode());
+        customers.setPhoneNumber(dtoCreateCustomer.getPhoneNumber());
+        customers.setType(dtoCreateCustomer.getType());
+        customers.setDateOfBirth(dtoCreateCustomer.getDateOfBirth());
+        return customers;
     }
 }

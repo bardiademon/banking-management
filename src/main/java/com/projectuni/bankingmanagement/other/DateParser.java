@@ -29,14 +29,18 @@ public final class DateParser
 
     public static String toString(final Date date)
     {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try
+        if (date != null)
         {
-            return dateFormat.format(date);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try
+            {
+                return dateFormat.format(date);
+            }
+            catch (Exception ignored)
+            {
+            }
         }
-        catch (Exception ignored)
-        {
-        }
-        return null;
+
+        return "0000-00-00";
     }
 }

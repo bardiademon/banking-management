@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomer;
 import com.projectuni.bankingmanagement.model.enums.CustomerType;
-import com.projectuni.bankingmanagement.model.service.CustomerService;
+import com.projectuni.bankingmanagement.model.service.CustomersService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -37,7 +37,7 @@ public class DTOCreateCustomer
     /**
      * This is a property for the mapper class that converts to Customer
      *
-     * @see CustomerService#createCustomer(DTOCreateCustomer)
+     * @see CustomersService#createCustomer(DTOCreateCustomer)
      * @see ToCustomer#to(DTOCreateCustomer)
      */
     @JsonIgnore

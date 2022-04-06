@@ -8,8 +8,9 @@ import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
 import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
+import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDtoCustomer;
-import com.projectuni.bankingmanagement.model.service.CustomerService;
+import com.projectuni.bankingmanagement.model.service.CustomersService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,12 +24,12 @@ import java.util.List;
 @Path("/customer")
 public class CustomerResource
 {
-    private final CustomerService customerService;
+    private final CustomersService customersService;
 
     @Inject
     public CustomerResource()
     {
-        customerService = SpringConfig.newInstance(CustomerService.class);
+        customersService = SpringConfig.newInstance(CustomersService.class);
     }
 
     @POST
@@ -39,7 +40,7 @@ public class CustomerResource
     {
         try
         {
-            customerService.createCustomer(dtoCreateCustomer);
+            customersService.createCustomer(dtoCreateCustomer);
             return "successfully!";
         }
         catch (InvalidCustomerNameException | InvalidNationalCodeException | InvalidDateOfBirthException | CannotCreateCustomerException | InvalidCustomerTypeException | InternalServerErrorException e)
@@ -51,9 +52,18 @@ public class CustomerResource
     @GET
     @Path("/get-customers")
     @Produces("application/json")
-    public List<DTOCustomer> createCustomer()
+    public List<DTOCustomer> getCustomers()
     {
-        return ToDtoCustomer.to(customerService.getCustomers());
+        return ToDtoCustomer.to(customersService.getCustomers());
+    }
+
+    @GET
+    @Path("/search-customers")
+    @Produces("application/json")
+    @Consumes("application/json")
+    public List<DTOCustomer> searchCustomer(final DTOSearchCustomer dtoSearchCustomer)
+    {
+        return ToDtoCustomer.to(customersService.getCustomers(dtoSearchCustomer));
     }
 
 }
