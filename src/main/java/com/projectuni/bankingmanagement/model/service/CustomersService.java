@@ -2,6 +2,7 @@ package com.projectuni.bankingmanagement.model.service;
 
 import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.CannotCreateCustomerException;
+import com.projectuni.bankingmanagement.exception.FoundDepositCustomer;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerNameException;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
@@ -11,7 +12,10 @@ import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
 import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomer;
 import com.projectuni.bankingmanagement.model.entity.Customers;
+import com.projectuni.bankingmanagement.model.entity.Deposit;
+import com.projectuni.bankingmanagement.model.enums.DepositStatus;
 import com.projectuni.bankingmanagement.model.repository.CustomersRepository;
+import com.projectuni.bankingmanagement.model.repository.DepositRepository;
 import com.projectuni.bankingmanagement.other.DateParser;
 import com.projectuni.bankingmanagement.other.Str;
 import org.springframework.stereotype.Service;
@@ -24,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public record CustomersService(CustomersRepository customersRepository)
+public record CustomersService(CustomersRepository customersRepository , DepositRepository depositRepository)
 {
 
     /**
@@ -160,6 +164,18 @@ public record CustomersService(CustomersRepository customersRepository)
             final Customers customer = customerFindById.get();
             customer.setStatus(newStatus);
             customersRepository.save(customer);
+        }
+        else throw new NotFoundCustomerException();
+    }
+
+    public void deleteCustomer(final long customerId) throws NotFoundCustomerException, FoundDepositCustomer
+    {
+        final Optional<Customers> customerById = customersRepository.findById(customerId);
+        if (customerById.isPresent())
+        {
+            final List<Deposit> depositByCustomerId = depositRepository.findByCustomerIdAndDepositStatus(customerId , DepositStatus.OPEN);
+            if (depositByCustomerId.size() == 0) customersRepository.delete(customerById.get());
+            else throw new FoundDepositCustomer();
         }
         else throw new NotFoundCustomerException();
     }

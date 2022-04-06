@@ -2,6 +2,7 @@ package com.projectuni.bankingmanagement.controller;
 
 import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.CannotCreateCustomerException;
+import com.projectuni.bankingmanagement.exception.FoundDepositCustomer;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerNameException;
 import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
@@ -15,6 +16,7 @@ import com.projectuni.bankingmanagement.model.service.CustomersService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
@@ -105,6 +107,32 @@ public class CustomerResource
             response = "invalid status";
         }
         return response;
+    }
+
+    @DELETE
+    @Path("/{CUSTOMER_ID}")
+    @Consumes("application/json")
+    public String deleteCustomer(final DTOSearchCustomer dtoSearchCustomer , @PathParam("CUSTOMER_ID") String idStr)
+    {
+        try
+        {
+            int customerId;
+            try
+            {
+                customerId = Integer.parseInt(idStr);
+            }
+            catch (Exception e)
+            {
+                return "invalid customer id";
+            }
+
+            customersService.deleteCustomer(customerId);
+            return "deleted";
+        }
+        catch (NotFoundCustomerException | FoundDepositCustomer e)
+        {
+            return e.getMessage();
+        }
     }
 
 }
