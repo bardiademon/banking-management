@@ -6,4 +6,9 @@ public final class NotFoundCustomerException extends Exception
     {
         super("Customer not found!");
     }
+
+    public NotFoundCustomerException(final long customerId)
+    {
+        super("Customer{" + customerId + "} not found!");
+    }
 }
