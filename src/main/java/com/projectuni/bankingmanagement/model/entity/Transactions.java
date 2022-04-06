@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @Entity
 @Table(name = "transactions")
-public class Transactions extends BaseEntity
+public final class Transactions extends BaseEntity
 {
     @Column(nullable = false)
     private int price;
