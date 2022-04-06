@@ -173,7 +173,7 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
         final Optional<Customers> customerById = customersRepository.findById(customerId);
         if (customerById.isPresent())
         {
-            final List<Deposit> depositByCustomerId = depositRepository.findByCustomerIdAndDepositStatus(customerId , DepositStatus.OPEN);
+            final List<Deposit> depositByCustomerId = depositRepository.findByCustomers_IdAndDepositStatus(customerId , DepositStatus.OPEN);
             if (depositByCustomerId.size() == 0) customersRepository.delete(customerById.get());
             else throw new FoundDepositCustomer();
         }

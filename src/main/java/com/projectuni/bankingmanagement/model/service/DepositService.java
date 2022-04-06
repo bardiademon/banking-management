@@ -20,7 +20,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         final Optional<Customers> customerById = customersRepository.findById(customerId);
         if (customerById.isPresent())
         {
-            final List<Deposit> depositByCustomerId = depositRepository.findByCustomerId(customerId);
+            final List<Deposit> depositByCustomerId = depositRepository.findByCustomers_Id(customerId);
             if (depositByCustomerId.size() > 0) return depositByCustomerId;
             else throw new NotFoundDepositException();
         }

@@ -37,7 +37,7 @@ public class CustomerResource
     }
 
     @POST
-    @Path("/create-customer")
+    @Path("/create")
     @Produces("application/json")
     @Consumes("application/json")
     public String createCustomer(final DTOCreateCustomer dtoCreateCustomer)
@@ -54,7 +54,7 @@ public class CustomerResource
     }
 
     @GET
-    @Path("/get-customers")
+    @Path("/get")
     @Produces("application/json")
     public List<DTOCustomer> getCustomers()
     {
@@ -62,7 +62,7 @@ public class CustomerResource
     }
 
     @GET
-    @Path("/search-customers")
+    @Path("/search")
     @Produces("application/json")
     @Consumes("application/json")
     public List<DTOCustomer> searchCustomer(final DTOSearchCustomer dtoSearchCustomer)

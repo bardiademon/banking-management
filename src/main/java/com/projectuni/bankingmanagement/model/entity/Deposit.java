@@ -11,10 +11,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,9 +28,8 @@ public final class Deposit extends BaseEntity
     @Column(name = "deposit_type", nullable = false)
     private DepositType depositType;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customers customer;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Customers> customers;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "deposit_status", nullable = false)

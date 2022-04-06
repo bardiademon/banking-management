@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -36,4 +38,7 @@ public final class DTODeposit
 
     @JsonProperty("credit_expiration_date")
     private String creditExpirationDate;
+
+    @JsonProperty("customers")
+    private List<DTOCustomer> dtoCustomers;
 }

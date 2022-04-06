@@ -37,9 +37,8 @@ public final class ToDTODeposit
             dtoDeposit.setCreditExpirationDate(deposit.getCreditExpirationDate().toString());
             dtoDeposit.setValidityStartDate(deposit.getValidityStartDate().toString());
 
-            final Customers customer = deposit.getCustomer();
-            dtoDeposit.setCustomerId(customer.getId());
-            dtoDeposit.setCustomerName(customer.getName());
+            final List<Customers> customers = deposit.getCustomers();
+            dtoDeposit.setDtoCustomers(ToDTOCustomer.to(customers));
 
             return dtoDeposit;
         }
