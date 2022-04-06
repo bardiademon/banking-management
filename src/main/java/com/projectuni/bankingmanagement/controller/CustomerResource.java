@@ -7,14 +7,18 @@ import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
 import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
 import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
+import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToDtoCustomer;
 import com.projectuni.bankingmanagement.model.service.CustomerService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.List;
 
 @Path("/customer")
 public class CustomerResource
@@ -43,4 +47,13 @@ public class CustomerResource
             return e.getMessage();
         }
     }
+
+    @GET
+    @Path("/get-customers")
+    @Produces("application/json")
+    public List<DTOCustomer> createCustomer()
+    {
+        return ToDtoCustomer.to(customerService.getCustomers());
+    }
+
 }

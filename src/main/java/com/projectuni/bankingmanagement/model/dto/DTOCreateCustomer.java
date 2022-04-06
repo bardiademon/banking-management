@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public final class DTOCreateCustomer
+public class DTOCreateCustomer
 {
     @JsonProperty("name")
     private String name;

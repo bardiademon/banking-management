@@ -26,4 +26,17 @@ public final class DateParser
         }
         return null;
     }
+
+    public static String toString(final Date date)
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try
+        {
+            return dateFormat.format(date);
+        }
+        catch (Exception ignored)
+        {
+        }
+        return null;
+    }
 }

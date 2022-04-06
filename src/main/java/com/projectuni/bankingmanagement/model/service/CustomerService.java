@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public record CustomerService(CustomerRepository customerRepository)
@@ -87,5 +88,11 @@ public record CustomerService(CustomerRepository customerRepository)
             else throw new InvalidCustomerNameException("Name is empty!" , false);
         }
         else throw new NullPointerException("Request is null");
+    }
+
+
+    public List<Customer> getCustomers()
+    {
+        return customerRepository.findAll();
     }
 }
