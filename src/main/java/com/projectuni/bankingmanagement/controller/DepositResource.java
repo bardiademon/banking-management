@@ -19,6 +19,7 @@ import com.projectuni.bankingmanagement.model.service.DepositService;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -127,10 +128,10 @@ public class DepositResource
 
         try
         {
-            depositService.increase(idDeposit , amount);
-            return "increase";
+            long transactionId = depositService.increase(idDeposit , amount);
+            return "increase: " + transactionId; // issue tracking
         }
-        catch (NotFoundDepositException | InvalidAccountInventory | InvalidIncreaseDepositException e)
+        catch (NotFoundDepositException | InvalidAccountInventory | InvalidIncreaseDepositException | NullPointerException | InternalServerErrorException e)
         {
             return e.getMessage();
         }
@@ -155,10 +156,10 @@ public class DepositResource
 
         try
         {
-            depositService.withdrawal(idDeposit , amount);
-            return "withdrawal";
+            long transactionId = depositService.withdrawal(idDeposit , amount);
+            return "withdrawal: " + transactionId; // issue tracking
         }
-        catch (NotFoundDepositException | InvalidAccountInventory | InvalidWithdrawalDepositException | InventoryIsNotEnoughException e)
+        catch (NotFoundDepositException | InvalidAccountInventory | InvalidWithdrawalDepositException | InventoryIsNotEnoughException | NullPointerException | InternalServerErrorException e)
         {
             return e.getMessage();
         }

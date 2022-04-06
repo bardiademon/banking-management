@@ -23,10 +23,10 @@ public final class Transactions extends BaseEntity
 {
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customers customers;
+    private Customers customer;
 
     @Column(nullable = false)
-    private int price;
+    private long price;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transactions_status")
@@ -43,9 +43,9 @@ public final class Transactions extends BaseEntity
     @ManyToOne
     @JoinColumn(name = "from_number", referencedColumnName = "id")
     private Deposit from;
-
-    @Column(name = "issue_tracking", nullable = false)
-    private int issueTracking;
+//
+//    @Column(name = "issue_tracking", nullable = false)
+//    private int issueTracking; // is id
 
     @Column(name = "transactions_description", length = 900)
     private String description;

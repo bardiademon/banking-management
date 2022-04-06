@@ -9,10 +9,13 @@ import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
+import com.projectuni.bankingmanagement.model.dto.DTOTransaction;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDeposit;
 import com.projectuni.bankingmanagement.model.entity.Customers;
 import com.projectuni.bankingmanagement.model.entity.Deposit;
 import com.projectuni.bankingmanagement.model.enums.DepositStatus;
+import com.projectuni.bankingmanagement.model.enums.TransactionsStatus;
+import com.projectuni.bankingmanagement.model.enums.TransactionsType;
 import com.projectuni.bankingmanagement.model.repository.CustomersRepository;
 import com.projectuni.bankingmanagement.model.repository.DepositRepository;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public record DepositService(DepositRepository depositRepository , CustomersRepository customersRepository)
+public record DepositService(DepositRepository depositRepository , CustomersRepository customersRepository ,
+                             TransactionsService transactionsService)
 {
 
     public List<Deposit> getDeposits(final long customerId) throws NotFoundCustomerException, NotFoundDepositException
@@ -123,9 +127,21 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @throws InvalidAccountInventory
      * @throws InvalidIncreaseDepositException
      */
-    public void increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException
+    public long increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException, NullPointerException, InternalServerErrorException
     {
         final Deposit depositById = getDepositById(depositId);
+
+        final DTOTransaction dtoTransaction = new DTOTransaction();
+        dtoTransaction.setFrom(depositById);
+        dtoTransaction.setTo(depositById);
+        dtoTransaction.setPrice(amount);
+        dtoTransaction.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
+
+        /**
+         * The number of errors is more
+         */
+        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+
         if (amount > 0)
         {
             final DepositStatus depositStatus = depositById.getDepositStatus();
@@ -133,10 +149,21 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
             {
                 depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
                 depositRepository.save(depositById);
+
+                dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+                return transactionsService.newTransaction(dtoTransaction);
             }
-            else throw new InvalidIncreaseDepositException();
+            else
+            {
+                transactionsService.newTransaction(dtoTransaction);
+                throw new InvalidIncreaseDepositException();
+            }
         }
-        else throw new InvalidAccountInventory();
+        else
+        {
+            transactionsService.newTransaction(dtoTransaction);
+            throw new InvalidAccountInventory();
+        }
     }
 
     /**
@@ -148,9 +175,21 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @throws InvalidAccountInventory
      * @throws InvalidWithdrawalDepositException
      */
-    public void withdrawal(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException
+    public long withdrawal(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException, NullPointerException, InternalServerErrorException
     {
         final Deposit depositById = getDepositById(depositId);
+
+        final DTOTransaction dtoTransaction = new DTOTransaction();
+        dtoTransaction.setFrom(depositById);
+        dtoTransaction.setTo(depositById);
+        dtoTransaction.setPrice(amount);
+        dtoTransaction.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
+
+        /**
+         * The number of errors is more
+         */
+        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+
         if (amount > 0)
         {
             final DepositStatus depositStatus = depositById.getDepositStatus();
@@ -161,12 +200,27 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
                 {
                     depositById.setAccountInventory(Math.abs(accountInventory - amount));
                     depositRepository.save(depositById);
+
+                    dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+                    return transactionsService.newTransaction(dtoTransaction);
                 }
-                else throw new InventoryIsNotEnoughException();
+                else
+                {
+                    transactionsService.newTransaction(dtoTransaction);
+                    throw new InventoryIsNotEnoughException();
+                }
             }
-            else throw new InvalidWithdrawalDepositException();
+            else
+            {
+                transactionsService.newTransaction(dtoTransaction);
+                throw new InvalidWithdrawalDepositException();
+            }
         }
-        else throw new InvalidAccountInventory();
+        else
+        {
+            transactionsService.newTransaction(dtoTransaction);
+            throw new InvalidAccountInventory();
+        }
     }
 
     private Deposit getDepositById(final long id) throws NotFoundDepositException
