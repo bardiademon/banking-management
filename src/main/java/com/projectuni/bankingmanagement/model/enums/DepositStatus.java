@@ -2,5 +2,5 @@ package com.projectuni.bankingmanagement.model.enums;
 
 public enum DepositStatus
 {
-    OPEN, CLOSED, BLOCKED_HARVEST, BLOCKED_DEPOSIT, BLOCKED_ALL
+    OPEN, CLOSED, BLOCKED_WITHDRAWAL, BLOCKED_DEPOSIT, BLOCKED_ALL
 }

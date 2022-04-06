@@ -4,6 +4,7 @@ import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
+import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
@@ -127,7 +128,7 @@ public class DepositResource
             depositService.increase(idDeposit , amount);
             return "increase";
         }
-        catch (NotFoundDepositException | InvalidAccountInventory e)
+        catch (NotFoundDepositException | InvalidAccountInventory | InvalidIncreaseDepositException e)
         {
             return e.getMessage();
         }

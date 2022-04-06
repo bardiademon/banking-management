@@ -3,6 +3,7 @@ package com.projectuni.bankingmanagement.model.service;
 import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
 import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
+import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
@@ -119,13 +120,17 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @throws NotFoundDepositException
      * @throws InvalidAccountInventory
      */
-    public void increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory
+    public void increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException
     {
         final Deposit depositById = getDepositById(depositId);
         if (amount > 0)
         {
-            depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
-            depositRepository.save(depositById);
+            if (depositById.getDepositStatus().equals(DepositStatus.OPEN) || depositById.getDepositStatus().equals(DepositStatus.BLOCKED_WITHDRAWAL))
+            {
+                depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
+                depositRepository.save(depositById);
+            }
+            else throw new InvalidIncreaseDepositException();
         }
         else throw new InvalidAccountInventory();
     }
