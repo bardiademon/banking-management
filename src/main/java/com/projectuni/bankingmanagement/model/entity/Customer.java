@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -22,14 +22,14 @@ public final class Customer extends BaseEntity
     @Column(name = "customer_name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "customer_family", nullable = false, length = 30)
+    @Column(name = "customer_family", length = 30)
     private String family;
 
-    @Column(name = "national_code", nullable = false)
+    @Column(name = "national_code", nullable = false, unique = true)
     private int nationalCode;
 
     @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
+    private Date dateOfBirth;
 
     @Column(name = "customer_status", nullable = false)
     private boolean status = true;
