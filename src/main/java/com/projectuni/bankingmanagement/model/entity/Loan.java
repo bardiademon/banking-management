@@ -1,5 +1,6 @@
 package com.projectuni.bankingmanagement.model.entity;
 
+import com.projectuni.bankingmanagement.model.enums.LoanStatus;
 import com.projectuni.bankingmanagement.model.enums.LoanType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,32 +18,39 @@ import javax.persistence.Table;
 @Setter
 @RequiredArgsConstructor
 @Entity
-@Table(name = "customer_loan")
+@Table(name = "deposit_loan")
 public final class Loan extends BaseEntity
 {
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customers customer;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "loan_type")
     private LoanType loanType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "loan_status")
+    private LoanStatus loanStatus;
+
     @Column(name = "interest_rate")
     private int interestRate;
 
+    @ManyToOne
+    @JoinColumn(name = "deposit_id", referencedColumnName = "id")
+    private Deposit deposit;
+
 //    private LocalDateTime loanOpeningDate; createdAt in BaseEntity
 
+    // مبلغ اصلی وام
     @Column(name = "the_principal_amount_of_the_loan")
-    private long thePrincipalAmountOfTheLoan;
+    private double thePrincipalAmountOfTheLoan;
 
+    // تعداد کل اقساط
     @Column(name = "total_number_of_installments")
     private int totalNumberOfInstallments;
 
+    // تعداد اقساط باقیمانده
     @Column(name = "number_of_remaining_installments")
     private int numberOfRemainingInstallments;
 
+    // مبلغ در هر قسط
     @Column(name = "amount_per_installment")
-    private long amountPerInstallment;
+    private double amountPerInstallment;
 }
