@@ -98,4 +98,18 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
         if (loans.size() > 0) return loans;
         else throw new NotFoundLoanException();
     }
+
+    public List<Loan> getLoans(final long depositId) throws NotFoundLoanException, NotFoundDepositException
+    {
+        /**
+         * If it crosses this line, it means that the deposit ID is valid
+         *
+         * @see DepositService#getDepositById(long)
+         */
+        depositService.getDepositById(depositId);
+
+        final List<Loan> loans = loanRepository.findAllByDepositId(depositId);
+        if (loans.size() > 0) return loans;
+        else throw new NotFoundLoanException();
+    }
 }

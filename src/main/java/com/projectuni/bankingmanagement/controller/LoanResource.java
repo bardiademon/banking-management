@@ -81,4 +81,19 @@ public class LoanResource
         }
         return null;
     }
+
+    @GET
+    @Path("/{DEPOSIT_ID}")
+    @Produces("application/json")
+    public List<LoanDto> getLoans(@PathParam("DEPOSIT_ID") long depositId)
+    {
+        try
+        {
+            return ToLoanDto.to(loanService.getLoans(depositId));
+        }
+        catch (NotFoundLoanException | NotFoundDepositException ignored)
+        {
+        }
+        return null;
+    }
 }
