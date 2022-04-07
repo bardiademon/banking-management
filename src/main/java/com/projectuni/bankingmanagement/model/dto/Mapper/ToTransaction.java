@@ -1,6 +1,6 @@
 package com.projectuni.bankingmanagement.model.dto.Mapper;
 
-import com.projectuni.bankingmanagement.model.dto.DTOTransaction;
+import com.projectuni.bankingmanagement.model.dto.TransactionDto;
 import com.projectuni.bankingmanagement.model.entity.Transactions;
 
 public final class ToTransaction
@@ -9,15 +9,15 @@ public final class ToTransaction
     {
     }
 
-    public static Transactions toTransaction(final DTOTransaction dtoTransaction)
+    public static Transactions toTransaction(final TransactionDto transactionDto)
     {
         final Transactions transaction = new Transactions();
-        transaction.setTransactionsType(dtoTransaction.getTransactionsType());
-        transaction.setTransactionsStatus(dtoTransaction.getTransactionsStatus());
-        transaction.setDescription(dtoTransaction.getDescription());
-        transaction.setFrom(dtoTransaction.getFrom());
-        transaction.setTo(dtoTransaction.getTo());
-        transaction.setPrice(dtoTransaction.getPrice());
+        transaction.setTransactionsType(transactionDto.getTransactionsType());
+        transaction.setTransactionsStatus(transactionDto.getTransactionsStatus());
+        transaction.setDescription(transactionDto.getDescription());
+        transaction.setFrom(transactionDto.getFrom());
+        transaction.setTo(transactionDto.getTo());
+        transaction.setPrice(transactionDto.getPrice());
         return transaction;
     }
 }

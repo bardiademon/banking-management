@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public final class DTOSearchCustomer
+public final class SearchCustomerDto
 {
     @JsonProperty("name")
     private String name;

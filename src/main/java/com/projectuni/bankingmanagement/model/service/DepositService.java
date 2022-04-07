@@ -9,8 +9,8 @@ import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.MoneyTransferException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
-import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
-import com.projectuni.bankingmanagement.model.dto.DTOTransaction;
+import com.projectuni.bankingmanagement.model.dto.OpeningDepositDto;
+import com.projectuni.bankingmanagement.model.dto.TransactionDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDeposit;
 import com.projectuni.bankingmanagement.model.entity.Customers;
 import com.projectuni.bankingmanagement.model.entity.Deposit;
@@ -57,17 +57,17 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
     }
 
     /**
-     * @param dtoOpeningDeposit
+     * @param openingDepositDto
      * @throws NullPointerException
      * @throws NotFoundCustomerException
      * @throws InvalidAccountInventory
      * @throws InvalidCreditExpirationDate
      */
-    public void openingDeposit(final DTOOpeningDeposit dtoOpeningDeposit) throws NullPointerException, NotFoundCustomerException, InvalidAccountInventory, InvalidCreditExpirationDate
+    public void openingDeposit(final OpeningDepositDto openingDepositDto) throws NullPointerException, NotFoundCustomerException, InvalidAccountInventory, InvalidCreditExpirationDate
     {
-        if (dtoOpeningDeposit != null)
+        if (openingDepositDto != null)
         {
-            final List<Integer> customerIds = dtoOpeningDeposit.getCustomerIds();
+            final List<Integer> customerIds = openingDepositDto.getCustomerIds();
             if (customerIds != null && customerIds.size() > 0)
             {
                 final List<Customers> customers = new ArrayList<>();
@@ -77,18 +77,18 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
                     if (customerById.isPresent()) customers.add(customerById.get());
                     else throw new NotFoundCustomerException(customerId);
                 }
-                if (dtoOpeningDeposit.getDepositType() != null)
+                if (openingDepositDto.getDepositType() != null)
                 {
-                    if (dtoOpeningDeposit.getDepositCurrency() != null)
+                    if (openingDepositDto.getDepositCurrency() != null)
                     {
-                        if (dtoOpeningDeposit.getDepositStatus() == null)
-                            dtoOpeningDeposit.setDepositStatus(DepositStatus.OPEN);
+                        if (openingDepositDto.getDepositStatus() == null)
+                            openingDepositDto.setDepositStatus(DepositStatus.OPEN);
 
-                        if (dtoOpeningDeposit.getAccountInventory() > 0)
+                        if (openingDepositDto.getAccountInventory() > 0)
                         {
-                            if (dtoOpeningDeposit.getCreditExpirationDate() > 0)
+                            if (openingDepositDto.getCreditExpirationDate() > 0)
                             {
-                                Deposit deposit = ToDeposit.to(dtoOpeningDeposit);
+                                Deposit deposit = ToDeposit.to(openingDepositDto);
                                 deposit.setCustomers(customers);
 
                                 deposit = depositRepository.save(deposit);
@@ -133,16 +133,16 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
     {
         final Deposit depositById = getDepositById(depositId);
 
-        final DTOTransaction dtoTransaction = new DTOTransaction();
-        dtoTransaction.setFrom(depositById);
-        dtoTransaction.setTo(depositById);
-        dtoTransaction.setPrice(amount);
-        dtoTransaction.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
+        final TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setFrom(depositById);
+        transactionDto.setTo(depositById);
+        transactionDto.setPrice(amount);
+        transactionDto.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
 
         /**
          * The number of errors is more
          */
-        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+        transactionDto.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
 
         if (amount > 0)
         {
@@ -152,18 +152,18 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
                 depositById.setAccountInventory(Math.abs(depositById.getAccountInventory() + amount));
                 depositRepository.save(depositById);
 
-                dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
-                return transactionsService.newTransaction(dtoTransaction);
+                transactionDto.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+                return transactionsService.newTransaction(transactionDto);
             }
             else
             {
-                transactionsService.newTransaction(dtoTransaction);
+                transactionsService.newTransaction(transactionDto);
                 throw new InvalidIncreaseDepositException();
             }
         }
         else
         {
-            transactionsService.newTransaction(dtoTransaction);
+            transactionsService.newTransaction(transactionDto);
             throw new InvalidAccountInventory();
         }
     }
@@ -186,16 +186,16 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
          */
         final Deposit depositById = getDepositById(depositId);
 
-        final DTOTransaction dtoTransaction = new DTOTransaction();
-        dtoTransaction.setFrom(depositById);
-        dtoTransaction.setTo(depositById);
-        dtoTransaction.setPrice(amount);
-        dtoTransaction.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
+        final TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setFrom(depositById);
+        transactionDto.setTo(depositById);
+        transactionDto.setPrice(amount);
+        transactionDto.setTransactionsType(TransactionsType.DEPOSIT_TO_ACCOUNT);
 
         /**
          * The number of errors is more
          */
-        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+        transactionDto.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
 
         if (amount > 0)
         {
@@ -208,24 +208,24 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
                     depositById.setAccountInventory(Math.abs(accountInventory - amount));
                     depositRepository.save(depositById);
 
-                    dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
-                    return transactionsService.newTransaction(dtoTransaction);
+                    transactionDto.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+                    return transactionsService.newTransaction(transactionDto);
                 }
                 else
                 {
-                    transactionsService.newTransaction(dtoTransaction);
+                    transactionsService.newTransaction(transactionDto);
                     throw new InventoryIsNotEnoughException();
                 }
             }
             else
             {
-                transactionsService.newTransaction(dtoTransaction);
+                transactionsService.newTransaction(transactionDto);
                 throw new InvalidWithdrawalDepositException();
             }
         }
         else
         {
-            transactionsService.newTransaction(dtoTransaction);
+            transactionsService.newTransaction(transactionDto);
             throw new InvalidAccountInventory();
         }
     }
@@ -249,12 +249,12 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         final DepositStatus fromDepositStatus = fromDeposit.getDepositStatus();
         final DepositStatus toDepositStatus = toDeposit.getDepositStatus();
 
-        final DTOTransaction dtoTransaction = new DTOTransaction();
-        dtoTransaction.setFrom(fromDeposit);
-        dtoTransaction.setTo(toDeposit);
-        dtoTransaction.setPrice(price);
-        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
-        dtoTransaction.setTransactionsType(TransactionsType.MONEY_TRANSFER);
+        final TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setFrom(fromDeposit);
+        transactionDto.setTo(toDeposit);
+        transactionDto.setPrice(price);
+        transactionDto.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+        transactionDto.setTransactionsType(TransactionsType.MONEY_TRANSFER);
 
         if ((fromDepositStatus.equals(DepositStatus.OPEN) && toDepositStatus.equals(DepositStatus.OPEN))
                 || (fromDepositStatus.equals(DepositStatus.BLOCKED_DEPOSIT) && toDepositStatus.equals(DepositStatus.BLOCKED_WITHDRAWAL)))
@@ -273,15 +273,15 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
              */
             long increase = increase(toDepositId , price);
 
-            dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
-            transactionsService.newTransaction(dtoTransaction);
+            transactionDto.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+            transactionsService.newTransaction(transactionDto);
 
             return new long[]{withdrawal , increase};
         }
         else
         {
-            dtoTransaction.setDescription(MoneyTransferException.class.getSimpleName());
-            transactionsService.newTransaction(dtoTransaction);
+            transactionDto.setDescription(MoneyTransferException.class.getSimpleName());
+            transactionsService.newTransaction(transactionDto);
             throw new MoneyTransferException();
         }
     }

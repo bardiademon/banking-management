@@ -10,11 +10,11 @@ import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.MoneyTransferException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
-import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
-import com.projectuni.bankingmanagement.model.dto.DTODeposit;
-import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
-import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTOCustomer;
-import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTODeposit;
+import com.projectuni.bankingmanagement.model.dto.CustomerDto;
+import com.projectuni.bankingmanagement.model.dto.DepositDto;
+import com.projectuni.bankingmanagement.model.dto.OpeningDepositDto;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomerDto;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToDepositDto;
 import com.projectuni.bankingmanagement.model.enums.DepositStatus;
 import com.projectuni.bankingmanagement.model.service.DepositService;
 
@@ -43,11 +43,11 @@ public class DepositResource
     @GET
     @Path("/{CUSTOMER_ID}")
     @Produces("application/json")
-    public List<DTODeposit> getDeposits(@PathParam("CUSTOMER_ID") String customerIdStr)
+    public List<DepositDto> getDeposits(@PathParam("CUSTOMER_ID") String customerIdStr)
     {
         try
         {
-            return ToDTODeposit.to(depositService.getDeposits(Long.parseLong(customerIdStr)));
+            return ToDepositDto.to(depositService.getDeposits(Long.parseLong(customerIdStr)));
         }
         catch (Exception ignored)
         {
@@ -58,11 +58,11 @@ public class DepositResource
     @GET
     @Path("/")
     @Produces("application/json")
-    public List<DTODeposit> getDeposits()
+    public List<DepositDto> getDeposits()
     {
         try
         {
-            return ToDTODeposit.to(depositService.getDeposits());
+            return ToDepositDto.to(depositService.getDeposits());
         }
         catch (Exception ignored)
         {
@@ -73,11 +73,11 @@ public class DepositResource
     @GET
     @Path("/get-customers/{ID_DEPOSIT}")
     @Produces("application/json")
-    public List<DTOCustomer> getCustomersDeposits(@PathParam("ID_DEPOSIT") String idDepositStr)
+    public List<CustomerDto> getCustomersDeposits(@PathParam("ID_DEPOSIT") String idDepositStr)
     {
         try
         {
-            return ToDTOCustomer.to(depositService.getCustomerDeposits(Integer.parseInt(idDepositStr)));
+            return ToCustomerDto.to(depositService.getCustomerDeposits(Integer.parseInt(idDepositStr)));
         }
         catch (Exception ignored)
         {
@@ -173,11 +173,11 @@ public class DepositResource
     @Path("/opening")
     @Produces("application/json")
     @Consumes("application/json")
-    public String openingADeposit(final DTOOpeningDeposit dtoOpeningDeposit)
+    public String openingADeposit(final OpeningDepositDto openingDepositDto)
     {
         try
         {
-            depositService.openingDeposit(dtoOpeningDeposit);
+            depositService.openingDeposit(openingDepositDto);
             return "opened";
         }
         catch (NullPointerException | NotFoundCustomerException | InvalidAccountInventory | InvalidCreditExpirationDate e)

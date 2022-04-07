@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class DTOCustomer extends DTOCreateCustomer
+public class CustomerDto extends CreateCustomerDto
 {
 
     @JsonProperty("id")

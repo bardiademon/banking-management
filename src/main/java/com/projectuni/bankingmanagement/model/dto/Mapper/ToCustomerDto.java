@@ -1,19 +1,19 @@
 package com.projectuni.bankingmanagement.model.dto.Mapper;
 
-import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
+import com.projectuni.bankingmanagement.model.dto.CustomerDto;
 import com.projectuni.bankingmanagement.model.entity.Customers;
 import com.projectuni.bankingmanagement.other.DateParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToDTOCustomer
+public class ToCustomerDto
 {
-    public static List<DTOCustomer> to(List<Customers> customers)
+    public static List<CustomerDto> to(List<Customers> customers)
     {
         if (customers != null && customers.size() > 0)
         {
-            final List<DTOCustomer> dtoCustomers = new ArrayList<>();
+            final List<CustomerDto> dtoCustomers = new ArrayList<>();
             for (final Customers customer : customers) dtoCustomers.add(to(customer));
             return dtoCustomers;
         }
@@ -21,9 +21,9 @@ public class ToDTOCustomer
         return null;
     }
 
-    public static DTOCustomer to(final Customers customer)
+    public static CustomerDto to(final Customers customer)
     {
-        final DTOCustomer dtoCustomer = new DTOCustomer();
+        final CustomerDto dtoCustomer = new CustomerDto();
         dtoCustomer.setId(customer.getId());
         dtoCustomer.setName(customer.getName());
         dtoCustomer.setFamily(customer.getFamily());

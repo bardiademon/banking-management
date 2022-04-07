@@ -3,8 +3,8 @@ package com.projectuni.bankingmanagement.controller;
 import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.exception.NotFoundTransactionsException;
-import com.projectuni.bankingmanagement.model.dto.DTOTransaction;
-import com.projectuni.bankingmanagement.model.dto.Mapper.ToDTOTransaction;
+import com.projectuni.bankingmanagement.model.dto.TransactionDto;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToTransactionDto;
 import com.projectuni.bankingmanagement.model.service.DepositService;
 import com.projectuni.bankingmanagement.model.service.TransactionsService;
 
@@ -33,11 +33,11 @@ public class TransactionsResource
     @GET
     @Path("/{DEPOSIT_ID}")
     @Produces("application/json")
-    public List<DTOTransaction> getDepositTransactions(@PathParam("DEPOSIT_ID") long depositId)
+    public List<TransactionDto> getDepositTransactions(@PathParam("DEPOSIT_ID") long depositId)
     {
         try
         {
-            return ToDTOTransaction.to(transactionsService.depositTransactions(depositId , depositService));
+            return ToTransactionDto.to(transactionsService.depositTransactions(depositId , depositService));
         }
         catch (NotFoundTransactionsException | NotFoundDepositException ignored)
         {
@@ -48,11 +48,11 @@ public class TransactionsResource
     @GET
     @Path("/issue-tracking/{TRANSACTION_ID}")
     @Produces("application/json")
-    public DTOTransaction getByNumber(@PathParam("TRANSACTION_ID") long transactionId)
+    public TransactionDto getByNumber(@PathParam("TRANSACTION_ID") long transactionId)
     {
         try
         {
-            return ToDTOTransaction.to(transactionsService.getById(transactionId));
+            return ToTransactionDto.to(transactionsService.getById(transactionId));
         }
         catch (NotFoundTransactionsException ignored)
         {

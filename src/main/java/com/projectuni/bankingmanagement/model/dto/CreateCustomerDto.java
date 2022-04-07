@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class DTOCreateCustomer
+public class CreateCustomerDto
 {
     @JsonProperty("name")
     private String name;
@@ -37,8 +37,8 @@ public class DTOCreateCustomer
     /**
      * This is a property for the mapper class that converts to Customer
      *
-     * @see CustomersService#createCustomer(DTOCreateCustomer)
-     * @see ToCustomer#to(DTOCreateCustomer)
+     * @see CustomersService#createCustomer(CreateCustomerDto)
+     * @see ToCustomer#to(CreateCustomerDto)
      */
     @JsonIgnore
     private Date dateOfBirth;

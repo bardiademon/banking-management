@@ -2,7 +2,7 @@ package com.projectuni.bankingmanagement.model.service;
 
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.exception.NotFoundTransactionsException;
-import com.projectuni.bankingmanagement.model.dto.DTOTransaction;
+import com.projectuni.bankingmanagement.model.dto.TransactionDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToTransaction;
 import com.projectuni.bankingmanagement.model.entity.Transactions;
 import com.projectuni.bankingmanagement.model.repository.TransactionsRepository;
@@ -15,11 +15,11 @@ import java.util.Optional;
 @Service
 public record TransactionsService(TransactionsRepository transactionsRepository)
 {
-    public long newTransaction(final DTOTransaction dtoTransaction) throws NullPointerException, InternalServerErrorException
+    public long newTransaction(final TransactionDto transactionDto) throws NullPointerException, InternalServerErrorException
     {
-        if (dtoTransaction != null)
+        if (transactionDto != null)
         {
-            Transactions transaction = ToTransaction.toTransaction(dtoTransaction);
+            Transactions transaction = ToTransaction.toTransaction(transactionDto);
             transaction = transactionsRepository.save(transaction);
             if (transaction.getId() <= 0) throw new InternalServerErrorException();
             else return transaction.getId();

@@ -13,11 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class DTODeposit
+public final class OpeningDepositDto
 {
-    @JsonProperty("id")
-    private long id;
-
     @JsonProperty("deposit_type")
     private DepositType depositType;
 
@@ -30,12 +27,12 @@ public class DTODeposit
     @JsonProperty("account_inventory")
     private long accountInventory;
 
-    @JsonProperty("validity_start_date")
-    private String validityStartDate;
-
+    /**
+     * month
+     */
     @JsonProperty("credit_expiration_date")
-    private String creditExpirationDate;
+    private int creditExpirationDate = 0;
 
     @JsonProperty("customers")
-    private List<DTOCustomer> dtoCustomers;
+    private List<Integer> customerIds;
 }

@@ -8,8 +8,8 @@ import com.projectuni.bankingmanagement.exception.InvalidCustomerTypeException;
 import com.projectuni.bankingmanagement.exception.InvalidDateOfBirthException;
 import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
-import com.projectuni.bankingmanagement.model.dto.DTOCreateCustomer;
-import com.projectuni.bankingmanagement.model.dto.DTOSearchCustomer;
+import com.projectuni.bankingmanagement.model.dto.CreateCustomerDto;
+import com.projectuni.bankingmanagement.model.dto.SearchCustomerDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomer;
 import com.projectuni.bankingmanagement.model.entity.Customers;
 import com.projectuni.bankingmanagement.model.entity.Deposit;
@@ -35,7 +35,7 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
      * This method is for adding a new customer to the database, in each step if the information isnot incomplete or valid,
      * an error is thrown and if no error is received from where it was used, it is intended to be added.
      *
-     * @param dtoCreateCustomer
+     * @param createCustomerDto
      * @throws NullPointerException
      * @throws InvalidCustomerNameException
      * @throws InvalidNationalCodeException
@@ -44,21 +44,21 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
      * @throws InvalidCustomerTypeException
      * @throws InternalServerErrorException
      */
-    public void createCustomer(final DTOCreateCustomer dtoCreateCustomer) throws NullPointerException, InvalidCustomerNameException, InvalidNationalCodeException, InvalidDateOfBirthException, CannotCreateCustomerException, InvalidCustomerTypeException, InternalServerErrorException
+    public void createCustomer(final CreateCustomerDto createCustomerDto) throws NullPointerException, InvalidCustomerNameException, InvalidNationalCodeException, InvalidDateOfBirthException, CannotCreateCustomerException, InvalidCustomerTypeException, InternalServerErrorException
     {
-        if (dtoCreateCustomer != null)
+        if (createCustomerDto != null)
         {
-            if (Str.notEmpty(dtoCreateCustomer.getName()))
+            if (Str.notEmpty(createCustomerDto.getName()))
             {
-                if (dtoCreateCustomer.getNationalCode() > 0)
+                if (createCustomerDto.getNationalCode() > 0)
                 {
-                    String dateOfBirthStr = dtoCreateCustomer.getDateOfBirthStr();
+                    String dateOfBirthStr = createCustomerDto.getDateOfBirthStr();
                     if (Str.notEmpty(dateOfBirthStr))
                     {
                         try
                         {
                             final Date dateOfBirth = DateParser.pars(dateOfBirthStr , "yyyy-MM-dd");
-                            dtoCreateCustomer.setDateOfBirth(dateOfBirth);
+                            createCustomerDto.setDateOfBirth(dateOfBirth);
                         }
                         catch (Exception e)
                         {
@@ -71,15 +71,15 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
                      *
                      * @see CustomersRepository#findByNationalCode(int)
                      */
-                    final Customers customersByNationalCode = customersRepository.findByNationalCode(dtoCreateCustomer.getNationalCode());
+                    final Customers customersByNationalCode = customersRepository.findByNationalCode(createCustomerDto.getNationalCode());
 
                     if (customersByNationalCode == null)
                     {
-                        if (dtoCreateCustomer.getType() != null)
+                        if (createCustomerDto.getType() != null)
                         {
                             try
                             {
-                                Customers customers = ToCustomer.to(dtoCreateCustomer);
+                                Customers customers = ToCustomer.to(createCustomerDto);
                                 customers = customersRepository.save(customers);
 
                                 if (customers.getId() <= 0) throw new CannotCreateCustomerException();
@@ -105,11 +105,11 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
         return customersRepository.findAll();
     }
 
-    public List<Customers> getCustomers(final DTOSearchCustomer dtoSearchCustomer)
+    public List<Customers> getCustomers(final SearchCustomerDto searchCustomerDto)
     {
-        if (dtoSearchCustomer != null)
+        if (searchCustomerDto != null)
         {
-            if (Str.notEmpty(dtoSearchCustomer.getName()) || dtoSearchCustomer.getNationalCode() > 0 || dtoSearchCustomer.getType() != null)
+            if (Str.notEmpty(searchCustomerDto.getName()) || searchCustomerDto.getNationalCode() > 0 || searchCustomerDto.getType() != null)
             {
                 final StringBuilder strQuery = new StringBuilder("select customer from Customers customer where ");
 
@@ -117,14 +117,14 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
 
                 boolean hasName = false, hasType = false, hasNationalCode = false;
 
-                if (Str.notEmpty(dtoSearchCustomer.getName()))
+                if (Str.notEmpty(searchCustomerDto.getName()))
                 {
                     hasName = true;
 
                     strQuery.append("customer.name = :NAME");
                     before = true;
                 }
-                if (dtoSearchCustomer.getType() != null)
+                if (searchCustomerDto.getType() != null)
                 {
                     hasType = true;
 
@@ -133,7 +133,7 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
                     strQuery.append("customer.type = :TYPE");
                     before = true;
                 }
-                if (dtoSearchCustomer.getNationalCode() > 0)
+                if (searchCustomerDto.getNationalCode() > 0)
                 {
                     hasNationalCode = true;
 
@@ -145,9 +145,9 @@ public record CustomersService(CustomersRepository customersRepository , Deposit
                 final EntityManager entityManager = SpringConfig.getEntityManager();
                 final Query query = entityManager.createQuery(strQuery.toString());
 
-                if (hasName) query.setParameter("NAME" , dtoSearchCustomer.getName());
-                if (hasType) query.setParameter("TYPE" , dtoSearchCustomer.getType());
-                if (hasNationalCode) query.setParameter("NATIONAL_CODE" , dtoSearchCustomer.getNationalCode());
+                if (hasName) query.setParameter("NAME" , searchCustomerDto.getName());
+                if (hasType) query.setParameter("TYPE" , searchCustomerDto.getType());
+                if (hasNationalCode) query.setParameter("NATIONAL_CODE" , searchCustomerDto.getNationalCode());
 
                 return (List<Customers>) query.getResultList();
             }

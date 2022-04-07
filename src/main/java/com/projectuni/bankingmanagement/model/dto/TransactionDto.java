@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public final class DTOTransaction
+public final class TransactionDto
 {
     @JsonIgnore
     private Customers customer;
@@ -34,10 +34,10 @@ public final class DTOTransaction
     private Deposit from;
 
     @JsonProperty("to")
-    private DTODeposit toDeposit;
+    private DepositDto toDeposit;
 
     @JsonProperty("from")
-    private DTODeposit fromDeposit;
+    private DepositDto fromDeposit;
 
     @JsonProperty("transaction_description")
     private String description;
