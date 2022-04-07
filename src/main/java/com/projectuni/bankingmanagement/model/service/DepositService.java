@@ -177,6 +177,11 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      */
     public long withdrawal(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException, NullPointerException, InternalServerErrorException
     {
+        /**
+         * Receives this deposit if it crosses this line has no error this method itself throws if there is an error
+         *
+         * @see this#getDepositById(long)
+         */
         final Deposit depositById = getDepositById(depositId);
 
         final DTOTransaction dtoTransaction = new DTOTransaction();
