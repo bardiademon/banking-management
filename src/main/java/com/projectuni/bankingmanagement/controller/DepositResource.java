@@ -1,8 +1,5 @@
 package com.projectuni.bankingmanagement.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
@@ -36,13 +33,11 @@ import java.util.Map;
 public class DepositResource
 {
 
-    private final ObjectWriter objectWriter;
     private final DepositService depositService;
 
     public DepositResource()
     {
         depositService = SpringConfig.newInstance(DepositService.class);
-        objectWriter = new ObjectMapper().writer();
     }
 
     @GET
@@ -194,7 +189,7 @@ public class DepositResource
     @POST
     @Path("/money-transfer/{FROM}/{TO}/{PRICE}")
     @Produces("application/json")
-    public String moneyTransfer(@PathParam("FROM") long fromDeposit , @PathParam("TO") long toDeposit , @PathParam("PRICE") long price)
+    public Map<String, Object> moneyTransfer(@PathParam("FROM") long fromDeposit , @PathParam("TO") long toDeposit , @PathParam("PRICE") long price)
     {
         final Map<String, Object> response = new LinkedHashMap<>();
 
@@ -210,14 +205,7 @@ public class DepositResource
         {
             response.put("result" , e.getMessage());
         }
-        try
-        {
-            return objectWriter.writeValueAsString(response);
-        }
-        catch (JsonProcessingException e)
-        {
-            return response.toString();
-        }
+        return response;
     }
 
 
