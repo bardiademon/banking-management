@@ -13,6 +13,7 @@ import com.projectuni.bankingmanagement.model.dto.CustomerDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomerDto;
 import com.projectuni.bankingmanagement.model.dto.SearchCustomerDto;
 import com.projectuni.bankingmanagement.model.service.CustomersService;
+import io.swagger.annotations.Api;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,6 +27,7 @@ import javax.ws.rs.Produces;
 import java.util.List;
 
 @Path("/customer")
+@Api(value = "/customers")
 public class CustomerResource
 {
     private final CustomersService customersService;

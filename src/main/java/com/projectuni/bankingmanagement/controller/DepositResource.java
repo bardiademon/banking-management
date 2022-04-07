@@ -17,6 +17,7 @@ import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomerDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToDepositDto;
 import com.projectuni.bankingmanagement.model.enums.DepositStatus;
 import com.projectuni.bankingmanagement.model.service.DepositService;
+import io.swagger.annotations.Api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/deposit")
+@Api(value = "/deposit")
 public class DepositResource
 {
 

@@ -7,6 +7,7 @@ import com.projectuni.bankingmanagement.model.dto.TransactionDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToTransactionDto;
 import com.projectuni.bankingmanagement.model.service.DepositService;
 import com.projectuni.bankingmanagement.model.service.TransactionsService;
+import io.swagger.annotations.Api;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/transactions")
+@Api(value = "/transactions")
 public class TransactionsResource
 {
 

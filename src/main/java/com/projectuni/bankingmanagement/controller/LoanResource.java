@@ -11,6 +11,7 @@ import com.projectuni.bankingmanagement.model.dto.LoanAllocationDto;
 import com.projectuni.bankingmanagement.model.dto.LoanDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToLoanDto;
 import com.projectuni.bankingmanagement.model.service.LoanService;
+import io.swagger.annotations.Api;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,6 +24,7 @@ import javax.ws.rs.Produces;
 import java.util.List;
 
 @Path("/loan")
+@Api(value = "/loan")
 public class LoanResource
 {
 
