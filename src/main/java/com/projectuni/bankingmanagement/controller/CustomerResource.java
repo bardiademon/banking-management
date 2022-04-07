@@ -10,8 +10,8 @@ import com.projectuni.bankingmanagement.exception.InvalidNationalCodeException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.model.dto.CreateCustomerDto;
 import com.projectuni.bankingmanagement.model.dto.CustomerDto;
-import com.projectuni.bankingmanagement.model.dto.SearchCustomerDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToCustomerDto;
+import com.projectuni.bankingmanagement.model.dto.SearchCustomerDto;
 import com.projectuni.bankingmanagement.model.service.CustomersService;
 
 import javax.inject.Inject;
@@ -73,7 +73,7 @@ public class CustomerResource
     @GET
     @Path("/change-status/{ID}/{STATUS}")
     @Consumes("application/json")
-    public String searchCustomer(final SearchCustomerDto searchCustomerDto , @PathParam("STATUS") String statusStr , @PathParam("ID") String idStr)
+    public String changeCustomerStatus(@PathParam("STATUS") String statusStr , @PathParam("ID") String idStr)
     {
         String response;
         try
