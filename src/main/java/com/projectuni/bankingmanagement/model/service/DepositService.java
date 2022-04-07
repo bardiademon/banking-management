@@ -286,7 +286,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         }
     }
 
-    private Deposit getDepositById(final long id) throws NotFoundDepositException
+    public Deposit getDepositById(final long id) throws NotFoundDepositException
     {
         final Optional<Deposit> depositById = depositRepository.findById(id);
         if (depositById.isPresent()) return depositById.get();

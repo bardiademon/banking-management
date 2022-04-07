@@ -23,6 +23,7 @@ public class BankingManagementApplication extends Application
         classes.add(RootResource.class);
         classes.add(CustomerResource.class);
         classes.add(DepositResource.class);
+        classes.add(TransactionsResource.class);
         return classes;
     }
 }

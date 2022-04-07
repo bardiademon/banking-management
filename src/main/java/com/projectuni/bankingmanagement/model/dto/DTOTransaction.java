@@ -27,11 +27,17 @@ public final class DTOTransaction
     @JsonProperty("transactions_type")
     private TransactionsType transactionsType;
 
-    @JsonProperty("to")
+    @JsonIgnore
     private Deposit to;
 
-    @JsonProperty("to")
+    @JsonIgnore
     private Deposit from;
+
+    @JsonProperty("to")
+    private DTODeposit toDeposit;
+
+    @JsonProperty("from")
+    private DTODeposit fromDeposit;
 
     @JsonProperty("transaction_description")
     private String description;
