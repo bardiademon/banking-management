@@ -45,6 +45,11 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
 
     public double calculateTheAmountOfEachInstallment(final double thePrincipalAmountOfTheLoan , final int interestRate , final int totalNumberOfInstallments)
     {
-        return ((thePrincipalAmountOfTheLoan + interestRate) / totalNumberOfInstallments);
+        return ((profitCalculation(thePrincipalAmountOfTheLoan , interestRate , totalNumberOfInstallments) + interestRate) / totalNumberOfInstallments);
+    }
+
+    public double profitCalculation(final double thePrincipalAmountOfTheLoan , final int interestRate , final int totalNumberOfInstallments)
+    {
+        return ((thePrincipalAmountOfTheLoan + interestRate) + (totalNumberOfInstallments + 1)) / 2400;
     }
 }
