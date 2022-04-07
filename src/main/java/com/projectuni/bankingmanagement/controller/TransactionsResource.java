@@ -44,4 +44,19 @@ public class TransactionsResource
         }
         return new ArrayList<>();
     }
+
+    @GET
+    @Path("/issue-tracking/{TRANSACTION_ID}")
+    @Produces("application/json")
+    public DTOTransaction getByNumber(@PathParam("TRANSACTION_ID") long transactionId)
+    {
+        try
+        {
+            return ToDTOTransaction.to(transactionsService.getById(transactionId));
+        }
+        catch (NotFoundTransactionsException ignored)
+        {
+        }
+        return null;
+    }
 }

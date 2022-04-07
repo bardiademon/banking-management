@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public record TransactionsService(TransactionsRepository transactionsRepository)
@@ -32,6 +33,13 @@ public record TransactionsService(TransactionsRepository transactionsRepository)
 
         final List<Transactions> transactions = transactionsRepository.findAllByFromIdOrToId(depositId , depositId);
         if (transactions.size() > 0) return transactions;
+        else throw new NotFoundTransactionsException();
+    }
+
+    public Transactions getById(final long transactionId) throws NotFoundTransactionsException
+    {
+        final Optional<Transactions> TransactionById = transactionsRepository.findById(transactionId);
+        if (TransactionById.isPresent()) return TransactionById.get();
         else throw new NotFoundTransactionsException();
     }
 }
