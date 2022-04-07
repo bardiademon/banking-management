@@ -56,7 +56,7 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
 
     public double profitCalculation(final double thePrincipalAmountOfTheLoan , final int interestRate , final int totalNumberOfInstallments)
     {
-        return ((thePrincipalAmountOfTheLoan + interestRate) + (totalNumberOfInstallments + 1)) / 2400;
+        return ((thePrincipalAmountOfTheLoan * interestRate) * (totalNumberOfInstallments + 1)) / 2400;
     }
 
     public void loanPayments(final long loanId) throws NotFoundLoadException, LoanIsClosedException, InventoryIsNotEnoughException, InvalidAccountInventory, NotFoundDepositException, InvalidWithdrawalDepositException
