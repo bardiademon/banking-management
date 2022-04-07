@@ -6,4 +6,9 @@ public final class NotFoundDepositException extends Exception
     {
         super("Not found Deposit");
     }
+
+    public NotFoundDepositException(final long depositId)
+    {
+        super("Not found Deposit: " + depositId);
+    }
 }

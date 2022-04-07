@@ -6,6 +6,7 @@ import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
 import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositException;
 import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
+import com.projectuni.bankingmanagement.exception.MoneyTransferException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOOpeningDeposit;
@@ -228,10 +229,51 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         }
     }
 
+    public long[] moneyTransfer(final long fromDepositId , final long toDepositId , final long price) throws NotFoundDepositException, InventoryIsNotEnoughException, InvalidAccountInventory, InvalidWithdrawalDepositException, InvalidIncreaseDepositException, MoneyTransferException
+    {
+        /**
+         * Receives this deposit if it crosses this line has no error this method itself throws if there is an error
+         *
+         * @see this#getDepositById(long)
+         */
+        final Deposit fromDeposit = getDepositById(fromDepositId);
+
+        /**
+         * Receives this deposit if it crosses this line has no error this method itself throws if there is an error
+         *
+         * @see this#getDepositById(long)
+         */
+        final Deposit toDeposit = getDepositById(toDepositId);
+
+        final DepositStatus fromDepositStatus = fromDeposit.getDepositStatus();
+        final DepositStatus toDepositStatus = toDeposit.getDepositStatus();
+        if ((fromDepositStatus.equals(DepositStatus.OPEN) && toDepositStatus.equals(DepositStatus.OPEN))
+                || (fromDepositStatus.equals(DepositStatus.BLOCKED_DEPOSIT) && toDepositStatus.equals(DepositStatus.BLOCKED_WITHDRAWAL)))
+        {
+            /**
+             * The return value is equal to the tracking number
+             *
+             * @see this#withdrawal(long , long)
+             */
+            long withdrawal = withdrawal(fromDepositId , price);
+
+            /**
+             * The return value is equal to the tracking number
+             *
+             * @see this#increase(long , long)
+             */
+            long increase = increase(toDepositId , price);
+
+            return new long[]{withdrawal , increase};
+        }
+        else throw new MoneyTransferException();
+    }
+
+
     private Deposit getDepositById(final long id) throws NotFoundDepositException
     {
         final Optional<Deposit> depositById = depositRepository.findById(id);
         if (depositById.isPresent()) return depositById.get();
-        else throw new NotFoundDepositException();
+        else throw new NotFoundDepositException(id);
     }
 }

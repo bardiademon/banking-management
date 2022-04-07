@@ -1,5 +1,8 @@
 package com.projectuni.bankingmanagement.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.projectuni.bankingmanagement.config.SpringConfig;
 import com.projectuni.bankingmanagement.exception.DepositIsClosedException;
 import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
@@ -7,6 +10,7 @@ import com.projectuni.bankingmanagement.exception.InvalidCreditExpirationDate;
 import com.projectuni.bankingmanagement.exception.InvalidIncreaseDepositException;
 import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositException;
 import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
+import com.projectuni.bankingmanagement.exception.MoneyTransferException;
 import com.projectuni.bankingmanagement.exception.NotFoundCustomerException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
 import com.projectuni.bankingmanagement.model.dto.DTOCustomer;
@@ -24,17 +28,21 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/deposit")
 public class DepositResource
 {
 
+    private final ObjectWriter objectWriter;
     private final DepositService depositService;
 
     public DepositResource()
     {
         depositService = SpringConfig.newInstance(DepositService.class);
+        objectWriter = new ObjectMapper().writer();
     }
 
     @GET
@@ -180,6 +188,35 @@ public class DepositResource
         catch (NullPointerException | NotFoundCustomerException | InvalidAccountInventory | InvalidCreditExpirationDate e)
         {
             return e.getMessage();
+        }
+    }
+
+    @POST
+    @Path("/money-transfer/{FROM}/{TO}/{PRICE}")
+    @Produces("application/json")
+    public String moneyTransfer(@PathParam("FROM") long fromDeposit , @PathParam("TO") long toDeposit , @PathParam("PRICE") long price)
+    {
+        final Map<String, Object> response = new LinkedHashMap<>();
+
+        try
+        {
+            final long[] issueTracking = depositService.moneyTransfer(fromDeposit , toDeposit , price);
+
+            response.put("result" , "done");
+            response.put("from_issue_tracking" , issueTracking[0]);
+            response.put("to_issue_tracking" , issueTracking[1]);
+        }
+        catch (MoneyTransferException | NullPointerException | InvalidAccountInventory | NotFoundDepositException | InventoryIsNotEnoughException | InvalidWithdrawalDepositException | InvalidIncreaseDepositException e)
+        {
+            response.put("result" , e.getMessage());
+        }
+        try
+        {
+            return objectWriter.writeValueAsString(response);
+        }
+        catch (JsonProcessingException e)
+        {
+            return response.toString();
         }
     }
 
