@@ -129,7 +129,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @throws InvalidAccountInventory
      * @throws InvalidIncreaseDepositException
      */
-    public long increase(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException, NullPointerException, InternalServerErrorException
+    public long increase(final long depositId , final double amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidIncreaseDepositException, NullPointerException, InternalServerErrorException
     {
         final Deposit depositById = getDepositById(depositId);
 
@@ -177,7 +177,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
      * @throws InvalidAccountInventory
      * @throws InvalidWithdrawalDepositException
      */
-    public long withdrawal(final long depositId , final long amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException, NullPointerException, InternalServerErrorException
+    public long withdrawal(final long depositId , final double amount) throws NotFoundDepositException, InvalidAccountInventory, InvalidWithdrawalDepositException, InventoryIsNotEnoughException, NullPointerException, InternalServerErrorException
     {
         /**
          * Receives this deposit if it crosses this line has no error this method itself throws if there is an error
@@ -202,7 +202,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
             final DepositStatus depositStatus = depositById.getDepositStatus();
             if (depositStatus.equals(DepositStatus.OPEN) || depositStatus.equals(DepositStatus.BLOCKED_DEPOSIT))
             {
-                final long accountInventory = depositById.getAccountInventory();
+                final double accountInventory = depositById.getAccountInventory();
                 if (accountInventory >= amount)
                 {
                     depositById.setAccountInventory(Math.abs(accountInventory - amount));
@@ -230,7 +230,7 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
         }
     }
 
-    public long[] moneyTransfer(final long fromDepositId , final long toDepositId , final long price) throws NotFoundDepositException, InventoryIsNotEnoughException, InvalidAccountInventory, InvalidWithdrawalDepositException, InvalidIncreaseDepositException, MoneyTransferException
+    public long[] moneyTransfer(final long fromDepositId , final long toDepositId , final double price) throws NotFoundDepositException, InventoryIsNotEnoughException, InvalidAccountInventory, InvalidWithdrawalDepositException, InvalidIncreaseDepositException, MoneyTransferException
     {
         /**
          * Receives this deposit if it crosses this line has no error this method itself throws if there is an error
@@ -297,6 +297,6 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
     {
         final Deposit depositById = getDepositById(depositId);
 
-        return String.format("%d %s" , depositById.getAccountInventory() , depositById.getDepositCurrency().name().toLowerCase(Locale.ROOT));
+        return String.format("%f %s" , depositById.getAccountInventory() , depositById.getDepositCurrency().name().toLowerCase(Locale.ROOT));
     }
 }

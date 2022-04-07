@@ -28,7 +28,7 @@ public class DepositDto
     private DepositCurrency depositCurrency;
 
     @JsonProperty("account_inventory")
-    private long accountInventory;
+    private double accountInventory;
 
     @JsonProperty("validity_start_date")
     private String validityStartDate;

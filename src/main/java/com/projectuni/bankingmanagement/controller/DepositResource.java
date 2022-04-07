@@ -116,7 +116,7 @@ public class DepositResource
     @POST
     @Path("/increase/{ID_DEPOSIT}/{AMOUNT}")
     @Produces("application/json")
-    public String increaseDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") long amount)
+    public String increaseDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") double amount)
     {
 
         long idDeposit;
@@ -144,7 +144,7 @@ public class DepositResource
     @GET
     @Path("/withdrawal/{ID_DEPOSIT}/{AMOUNT}")
     @Produces("application/json")
-    public String withdrawalDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") long amount)
+    public String withdrawalDeposit(@PathParam("ID_DEPOSIT") String idDepositStr , @PathParam("AMOUNT") double amount)
     {
 
         long idDeposit;
@@ -189,7 +189,7 @@ public class DepositResource
     @POST
     @Path("/money-transfer/{FROM}/{TO}/{PRICE}")
     @Produces("application/json")
-    public Map<String, Object> moneyTransfer(@PathParam("FROM") long fromDeposit , @PathParam("TO") long toDeposit , @PathParam("PRICE") long price)
+    public Map<String, Object> moneyTransfer(@PathParam("FROM") long fromDeposit , @PathParam("TO") long toDeposit , @PathParam("PRICE") double price)
     {
         final Map<String, Object> response = new LinkedHashMap<>();
 

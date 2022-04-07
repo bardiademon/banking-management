@@ -26,7 +26,7 @@ public final class Transactions extends BaseEntity
     private Customers customer;
 
     @Column(nullable = false)
-    private long price;
+    private double price;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transactions_status")

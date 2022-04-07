@@ -1,6 +1,11 @@
 package com.projectuni.bankingmanagement.model.service;
 
+import com.projectuni.bankingmanagement.exception.InvalidAccountInventory;
+import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositException;
+import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
+import com.projectuni.bankingmanagement.exception.LoanIsClosedException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
+import com.projectuni.bankingmanagement.exception.NotFoundLoadException;
 import com.projectuni.bankingmanagement.model.dto.LoanDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToLoan;
 import com.projectuni.bankingmanagement.model.entity.Deposit;
@@ -10,6 +15,7 @@ import com.projectuni.bankingmanagement.model.repository.LoanRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.ws.rs.InternalServerErrorException;
+import java.util.Optional;
 
 @Repository
 public record LoanService(LoanRepository loanRepository , DepositService depositService)
@@ -51,5 +57,37 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
     public double profitCalculation(final double thePrincipalAmountOfTheLoan , final int interestRate , final int totalNumberOfInstallments)
     {
         return ((thePrincipalAmountOfTheLoan + interestRate) + (totalNumberOfInstallments + 1)) / 2400;
+    }
+
+    public void loanPayments(final long loanId) throws NotFoundLoadException, LoanIsClosedException, InventoryIsNotEnoughException, InvalidAccountInventory, NotFoundDepositException, InvalidWithdrawalDepositException
+    {
+        final Optional<Loan> loanById = loanRepository.findById(loanId);
+        if (loanById.isPresent())
+        {
+            final Loan loan = loanById.get();
+            if (!loan.getLoanStatus().equals(LoanStatus.CLOSED))
+            {
+                final double amountPerInstallment = loan.getAmountPerInstallment();
+
+                final Deposit deposit = loan.getDeposit();
+
+                if (deposit.getAccountInventory() >= amountPerInstallment)
+                {
+                    depositService.withdrawal(deposit.getId() , amountPerInstallment);
+
+                    final int numberOfRemainingInstallments = loan.getNumberOfRemainingInstallments();
+
+                    loan.setNumberOfRemainingInstallments(numberOfRemainingInstallments - 1);
+
+                    if (loan.getNumberOfRemainingInstallments() <= 0) loan.setLoanStatus(LoanStatus.CLOSED);
+                    else loan.setLoanStatus(LoanStatus.PAYING);
+
+                    loanRepository.save(loan);
+                }
+                else throw new InventoryIsNotEnoughException();
+            }
+            else throw new LoanIsClosedException(loanId);
+        }
+        else throw new NotFoundLoadException(loanId);
     }
 }

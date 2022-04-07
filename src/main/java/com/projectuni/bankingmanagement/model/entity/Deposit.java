@@ -40,7 +40,7 @@ public final class Deposit extends BaseEntity
     private DepositCurrency depositCurrency;
 
     @Column(name = "account_inventory")
-    private long accountInventory = 0;
+    private double accountInventory = 0;
 
     @Column(name = "validity_start_date", nullable = false)
     private LocalDateTime validityStartDate;

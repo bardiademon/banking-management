@@ -19,7 +19,7 @@ public final class TransactionDto
     private Customers customer;
 
     @JsonProperty("price")
-    private long price;
+    private double price;
 
     @JsonProperty("transactions_status")
     private TransactionsStatus transactionsStatus;

@@ -25,7 +25,7 @@ public final class OpeningDepositDto
     private DepositCurrency depositCurrency;
 
     @JsonProperty("account_inventory")
-    private long accountInventory;
+    private double accountInventory;
 
     /**
      * month
