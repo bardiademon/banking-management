@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.InternalServerErrorException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -247,6 +248,14 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
 
         final DepositStatus fromDepositStatus = fromDeposit.getDepositStatus();
         final DepositStatus toDepositStatus = toDeposit.getDepositStatus();
+
+        final DTOTransaction dtoTransaction = new DTOTransaction();
+        dtoTransaction.setFrom(fromDeposit);
+        dtoTransaction.setTo(toDeposit);
+        dtoTransaction.setPrice(price);
+        dtoTransaction.setTransactionsStatus(TransactionsStatus.UNSUCCESSFUL);
+        dtoTransaction.setTransactionsType(TransactionsType.MONEY_TRANSFER);
+
         if ((fromDepositStatus.equals(DepositStatus.OPEN) && toDepositStatus.equals(DepositStatus.OPEN))
                 || (fromDepositStatus.equals(DepositStatus.BLOCKED_DEPOSIT) && toDepositStatus.equals(DepositStatus.BLOCKED_WITHDRAWAL)))
         {
@@ -264,16 +273,30 @@ public record DepositService(DepositRepository depositRepository , CustomersRepo
              */
             long increase = increase(toDepositId , price);
 
+            dtoTransaction.setTransactionsStatus(TransactionsStatus.SUCCESSFUL);
+            transactionsService.newTransaction(dtoTransaction);
+
             return new long[]{withdrawal , increase};
         }
-        else throw new MoneyTransferException();
+        else
+        {
+            dtoTransaction.setDescription(MoneyTransferException.class.getSimpleName());
+            transactionsService.newTransaction(dtoTransaction);
+            throw new MoneyTransferException();
+        }
     }
-
 
     private Deposit getDepositById(final long id) throws NotFoundDepositException
     {
         final Optional<Deposit> depositById = depositRepository.findById(id);
         if (depositById.isPresent()) return depositById.get();
         else throw new NotFoundDepositException(id);
+    }
+
+    public String getDepositBalance(final long depositId) throws NotFoundDepositException
+    {
+        final Deposit depositById = getDepositById(depositId);
+
+        return String.format("%d %s" , depositById.getAccountInventory() , depositById.getDepositCurrency().name().toLowerCase(Locale.ROOT));
     }
 }

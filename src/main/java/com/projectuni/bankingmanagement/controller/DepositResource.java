@@ -208,5 +208,19 @@ public class DepositResource
         return response;
     }
 
+    @GET
+    @Path("/deposit-balance/{DEPOSIT_ID}")
+    @Produces("application/json")
+    public String getDepositBalance(@PathParam("DEPOSIT_ID") long depositId)
+    {
+        try
+        {
+            return depositService.getDepositBalance(depositId);
+        }
+        catch (NotFoundDepositException e)
+        {
+            return e.getMessage();
+        }
+    }
 
 }
