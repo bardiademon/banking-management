@@ -5,8 +5,8 @@ import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositExcept
 import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.LoanIsClosedException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
-import com.projectuni.bankingmanagement.exception.NotFoundLoadException;
-import com.projectuni.bankingmanagement.model.dto.LoanDto;
+import com.projectuni.bankingmanagement.exception.NotFoundLoanException;
+import com.projectuni.bankingmanagement.model.dto.LoanAllocationDto;
 import com.projectuni.bankingmanagement.model.dto.Mapper.ToLoan;
 import com.projectuni.bankingmanagement.model.entity.Deposit;
 import com.projectuni.bankingmanagement.model.entity.Loan;
@@ -15,23 +15,24 @@ import com.projectuni.bankingmanagement.model.repository.LoanRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.ws.rs.InternalServerErrorException;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public record LoanService(LoanRepository loanRepository , DepositService depositService)
 {
 
-    public void loanAllocation(final LoanDto loanDto) throws NullPointerException, NotFoundDepositException, InternalServerErrorException
+    public void loanAllocation(final LoanAllocationDto loanAllocationDto) throws NullPointerException, NotFoundDepositException, InternalServerErrorException
     {
-        if (loanDto != null && loanDto.getThePrincipalAmountOfTheLoan() > 0 && loanDto.getTotalNumberOfInstallments() > 0)
+        if (loanAllocationDto != null && loanAllocationDto.getThePrincipalAmountOfTheLoan() > 0 && loanAllocationDto.getTotalNumberOfInstallments() > 0)
         {
-            if (loanDto.getLoanType() != null)
+            if (loanAllocationDto.getLoanType() != null)
             {
-                if (loanDto.getInterestRate() != null)
+                if (loanAllocationDto.getInterestRate() != null)
                 {
-                    final Deposit depositById = depositService.getDepositById(loanDto.getDepositId());
+                    final Deposit depositById = depositService.getDepositById(loanAllocationDto.getDepositId());
 
-                    Loan loan = ToLoan.to(loanDto);
+                    Loan loan = ToLoan.to(loanAllocationDto);
                     loan.setAmountPerInstallment(calculateTheAmountOfEachInstallment(loan.getThePrincipalAmountOfTheLoan() , loan.getInterestRate() , loan.getTotalNumberOfInstallments()));
                     loan.setNumberOfRemainingInstallments(loan.getTotalNumberOfInstallments());
                     loan.setDeposit(depositById);
@@ -59,7 +60,7 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
         return ((thePrincipalAmountOfTheLoan * interestRate) * (totalNumberOfInstallments + 1)) / 2400;
     }
 
-    public void loanPayments(final long loanId) throws NotFoundLoadException, LoanIsClosedException, InventoryIsNotEnoughException, InvalidAccountInventory, NotFoundDepositException, InvalidWithdrawalDepositException
+    public void loanPayments(final long loanId) throws NotFoundLoanException, LoanIsClosedException, InventoryIsNotEnoughException, InvalidAccountInventory, NotFoundDepositException, InvalidWithdrawalDepositException
     {
         final Optional<Loan> loanById = loanRepository.findById(loanId);
         if (loanById.isPresent())
@@ -88,6 +89,13 @@ public record LoanService(LoanRepository loanRepository , DepositService deposit
             }
             else throw new LoanIsClosedException(loanId);
         }
-        else throw new NotFoundLoadException(loanId);
+        else throw new NotFoundLoanException(loanId);
+    }
+
+    public List<Loan> getLoans() throws NotFoundLoanException
+    {
+        final List<Loan> loans = loanRepository.findAll();
+        if (loans.size() > 0) return loans;
+        else throw new NotFoundLoanException();
     }
 }

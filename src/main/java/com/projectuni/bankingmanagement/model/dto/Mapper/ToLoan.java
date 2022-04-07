@@ -1,6 +1,6 @@
 package com.projectuni.bankingmanagement.model.dto.Mapper;
 
-import com.projectuni.bankingmanagement.model.dto.LoanDto;
+import com.projectuni.bankingmanagement.model.dto.LoanAllocationDto;
 import com.projectuni.bankingmanagement.model.entity.Loan;
 
 public final class ToLoan
@@ -9,13 +9,13 @@ public final class ToLoan
     {
     }
 
-    public static Loan to(final LoanDto loanDto)
+    public static Loan to(final LoanAllocationDto loanAllocationDto)
     {
         final Loan loan = new Loan();
-        loan.setLoanType(loanDto.getLoanType());
-        loan.setInterestRate(loanDto.getInterestRate().interestRate());
-        loan.setThePrincipalAmountOfTheLoan(loanDto.getThePrincipalAmountOfTheLoan());
-        loan.setTotalNumberOfInstallments(loanDto.getTotalNumberOfInstallments());
+        loan.setLoanType(loanAllocationDto.getLoanType());
+        loan.setInterestRate(loanAllocationDto.getInterestRate().interestRate());
+        loan.setThePrincipalAmountOfTheLoan(loanAllocationDto.getThePrincipalAmountOfTheLoan());
+        loan.setTotalNumberOfInstallments(loanAllocationDto.getTotalNumberOfInstallments());
         return loan;
     }
 

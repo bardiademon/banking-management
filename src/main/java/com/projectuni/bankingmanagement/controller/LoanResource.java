@@ -6,17 +6,21 @@ import com.projectuni.bankingmanagement.exception.InvalidWithdrawalDepositExcept
 import com.projectuni.bankingmanagement.exception.InventoryIsNotEnoughException;
 import com.projectuni.bankingmanagement.exception.LoanIsClosedException;
 import com.projectuni.bankingmanagement.exception.NotFoundDepositException;
-import com.projectuni.bankingmanagement.exception.NotFoundLoadException;
+import com.projectuni.bankingmanagement.exception.NotFoundLoanException;
+import com.projectuni.bankingmanagement.model.dto.LoanAllocationDto;
 import com.projectuni.bankingmanagement.model.dto.LoanDto;
+import com.projectuni.bankingmanagement.model.dto.Mapper.ToLoanDto;
 import com.projectuni.bankingmanagement.model.service.LoanService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import java.util.List;
 
 @Path("/loan")
 public class LoanResource
@@ -34,11 +38,11 @@ public class LoanResource
     @Path("/loan-allocation")
     @Produces("text/plain")
     @Consumes("application/json")
-    public String loanAllocation(final LoanDto loanDto)
+    public String loanAllocation(final LoanAllocationDto loanAllocationDto)
     {
         try
         {
-            loanService.loanAllocation(loanDto);
+            loanService.loanAllocation(loanAllocationDto);
             return "done!";
         }
         catch (NotFoundDepositException | NullPointerException | InternalServerErrorException e)
@@ -57,9 +61,24 @@ public class LoanResource
             loanService.loanPayments(loanId);
             return "done!";
         }
-        catch (NotFoundLoadException | LoanIsClosedException | InventoryIsNotEnoughException | InvalidAccountInventory | NotFoundDepositException | InvalidWithdrawalDepositException e)
+        catch (NotFoundLoanException | LoanIsClosedException | InventoryIsNotEnoughException | InvalidAccountInventory | NotFoundDepositException | InvalidWithdrawalDepositException e)
         {
             return e.getMessage();
         }
+    }
+
+    @GET
+    @Path("/")
+    @Produces("application/json")
+    public List<LoanDto> getLoans()
+    {
+        try
+        {
+            return ToLoanDto.to(loanService.getLoans());
+        }
+        catch (NotFoundLoanException ignored)
+        {
+        }
+        return null;
     }
 }
